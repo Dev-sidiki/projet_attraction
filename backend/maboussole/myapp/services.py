@@ -1,7 +1,10 @@
+from django.core.cache import cache
+from .models import MyApp
 import requests
 from django.conf import settings
 
-API_KEY = settings.TRIPADVISOR_API_KEY 
+API_KEY = settings.TRIPADVISOR_API_KEY
+
 
 
 def get_nearby_locations(lat_long):
@@ -12,7 +15,7 @@ def get_nearby_locations(lat_long):
         "language": "fr"
     }
     response = requests.get(url, params=params)
-    response.raise_for_status()
+    response.raise_for_status()  # Lève une exception en cas d'erreur HTTP
     return response.json()
 
 
@@ -23,8 +26,9 @@ def search_location(query):
         "searchQuery": query,
     }
     response = requests.get(url, params=params)
-    response.raise_for_status()
+    response.raise_for_status()  # Lève une exception en cas d'erreur HTTP
     return response.json()
+
 
 
 def get_location_details(location_id):
@@ -37,17 +41,8 @@ def get_location_details(location_id):
     
     try:
         response = requests.get(url, params=params)
-        response.raise_for_status()
+        response.raise_for_status()  # Lève une exception en cas d'erreur HTTP
         return response.json()
-    except requests.exceptions.HTTPError as errh:
-        print(f"HTTP Error: {errh}")
-        raise
-    except requests.exceptions.ConnectionError as errc:
-        print(f"Error Connecting: {errc}")
-        raise
-    except requests.exceptions.Timeout as errt:
-        print(f"Timeout Error: {errt}")
-        raise
     except requests.exceptions.RequestException as err:
-        print(f"Oops: Something Else: {err}")
-        raise
+        # Log ou gérer l'erreur
+        return None
